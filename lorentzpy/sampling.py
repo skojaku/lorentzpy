@@ -328,22 +328,60 @@ def compute_density_monte_carlo(
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Compute density on a 2D grid using Monte Carlo sampling on hyperboloid.
 
+    This function generates Monte Carlo samples on the hyperboloid manifold,
+    projects them to a lower-dimensional space using the provided projector,
+    converts to Poincare disk coordinates, and computes a 2D histogram density.
+
     Args:
-        embeddings: Embeddings on hyperboloid, shape (N, 3) for 2D case
-        weights: Weights for importance sampling
-        n_samples: Number of Monte Carlo samples
-        distance_sampler: Callable for sampling distances (see monte_carlo_sample)
-        k: Curvature parameter
-        grid_size: Output density grid resolution
-        xlim, ylim: Grid limits in Poincare coordinates
-        max_distance: Maximum distance for truncating samples
-        use_kde: If True, use KDE instead of histogram
-        kde_bandwidth: Bandwidth for KDE (if use_kde=True)
-        generator: PyTorch random generator
+        embeddings: Points on hyperboloid, shape (N, d+1)
+        weights: Sampling weights for each embedding, shape (N,). Points are
+            sampled with probability proportional to these weights.
+        n_samples: Number of Monte Carlo samples to generate
+        projector: Callable that projects hyperboloid samples to lower dimensions.
+            Takes tensor of shape (n_samples, d+1) and returns tensor of shape
+            (n_samples, 3) for 2D visualization. Use identity function if
+            embeddings are already 3D.
+        distance_sampler: Callable for sampling distances from center points.
+            Takes (n_samples, device, dtype, generator) and returns distances.
+            See half_cauchy_sampler, exponential_sampler, etc.
+        k: Curvature parameter of the hyperboloid (default: 1.0)
+        grid_size: Resolution of the output density grid (default: 100)
+        xlim: Tuple of (min, max) for x-axis in Poincare coordinates.
+            Defaults to (-0.99, 0.99).
+        ylim: Tuple of (min, max) for y-axis in Poincare coordinates.
+            Defaults to (-0.99, 0.99).
+        max_distance: Maximum distance to truncate samples. Recommended for
+            heavy-tailed distributions to prevent numerical overflow.
+        generator: PyTorch random generator for reproducibility
 
     Returns:
-        X_grid, Y_grid: Meshgrid arrays (grid_size, grid_size)
-        density: Density values on grid (grid_size, grid_size)
+        Tuple of (X_grid, Y_grid, density):
+            - X_grid: x-coordinates meshgrid, shape (grid_size, grid_size)
+            - Y_grid: y-coordinates meshgrid, shape (grid_size, grid_size)
+            - density: Density values on grid, shape (grid_size, grid_size)
+
+    Example:
+        >>> import torch
+        >>> import lorentzpy
+        >>> from lorentzpy.sampling import (
+        ...     compute_density_monte_carlo,
+        ...     half_cauchy_sampler
+        ... )
+        >>>
+        >>> # Create 3D hyperboloid embeddings (for 2D Poincare disk)
+        >>> embeddings = lorentzpy.from_poincare(torch.randn(100, 2) * 0.3)
+        >>> weights = torch.ones(100)
+        >>>
+        >>> # Identity projector for 3D embeddings
+        >>> projector = lambda x: x
+        >>>
+        >>> # Compute density
+        >>> X, Y, density = compute_density_monte_carlo(
+        ...     embeddings, weights, n_samples=10000,
+        ...     projector=projector,
+        ...     distance_sampler=half_cauchy_sampler(gamma=1.0),
+        ...     max_distance=10.0
+        ... )
     """
     # Generate Monte Carlo samples
     samples = monte_carlo_sample(

@@ -2,6 +2,27 @@
 
 A Python library for hyperbolic geometry operations on the Lorentz (hyperboloid) model with variable curvature support.
 
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Conventions](#conventions)
+- [API Reference](#api-reference)
+  - [Coordinate Conversions](#coordinate-conversions)
+  - [Frechet Statistics](#frechet-statistics)
+  - [Centering](#centering)
+  - [HoroPCA](#horopca)
+  - [K-Means Clustering](#k-means-clustering)
+  - [KNN Search](#knn-search)
+  - [Monte Carlo Sampling](#monte-carlo-sampling)
+  - [Visualization](#visualization)
+  - [Projection Operations](#projection-operations)
+  - [Minkowski Space Utilities](#minkowski-space-utilities)
+- [Complete Example: Density Visualization](#complete-example-density-visualization)
+- [License](#license)
+- [Citation](#citation)
+
 ## Features
 
 - **Coordinate conversions**: Convert between Lorentz hyperboloid and Poincare ball models
