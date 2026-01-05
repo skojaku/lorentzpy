@@ -881,7 +881,7 @@ If you use this library in your research, please cite:
 @software{lorentzpy,
   author = {Sadamori Kojaku},
   title = {lorentzpy: Utilities for Lorentzian Embeddings},
-  year = {2024},
+  year = {2026},
   url = {https://github.com/skojaku/lorentzpy}
 }
 ```
