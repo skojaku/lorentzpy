@@ -619,6 +619,10 @@ Create a uniform distance sampler. Density: `p(d) = 1/max_distance` for `0 <= d 
 
 Create a half-Gaussian (folded normal) distance sampler. Samples `|X|` where `X ~ N(0, sigma^2)`
 
+##### `lorentzpy.student_t_sampler(df, scale=1.0)`
+
+Create a half-Student's t distance sampler. Samples `|X|` where `X ~ t(df) * scale`.
+
 **Example:**
 ```python
 # Different distribution samplers
@@ -626,6 +630,7 @@ cauchy = lorentzpy.half_cauchy_sampler(gamma=0.5)
 exponential = lorentzpy.exponential_sampler(rate=2.0)
 uniform = lorentzpy.uniform_sampler(max_distance=3.0)
 gaussian = lorentzpy.gaussian_sampler(sigma=1.0)
+student_t = lorentzpy.student_t_sampler(df=3.0, scale=0.5)
 ```
 
 ---

@@ -57,6 +57,7 @@ from .sampling import (
     exponential_sampler,
     uniform_sampler,
     gaussian_sampler,
+    student_t_sampler,
     sample_tangent_direction,
     project_to_tangent_space,
 )
@@ -96,6 +97,7 @@ __all__ = [
     "exponential_sampler",
     "uniform_sampler",
     "gaussian_sampler",
+    "student_t_sampler",
     "sample_tangent_direction",
     "project_to_tangent_space",
     # Modules

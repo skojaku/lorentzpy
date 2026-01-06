@@ -5,6 +5,7 @@ using user-defined distance distributions centered at weighted embedding points.
 """
 
 import torch
+import torch.distributions
 import math
 from typing import Optional, Callable, Tuple
 import numpy as np
@@ -188,6 +189,43 @@ def gaussian_sampler(
             torch.randn(n_samples, device=device, dtype=dtype, generator=generator)
             * sigma
         )
+
+    return sampler
+
+
+def student_t_sampler(
+    df: float,
+    scale: float = 1.0,
+) -> Callable[
+    [int, torch.device, torch.dtype, Optional[torch.Generator]], torch.Tensor
+]:
+    """Create a half-Student's t distance sampler.
+
+    Samples |X| where X ~ StudentT(df, loc=0, scale=scale)
+
+    Args:
+        df: Degrees of freedom
+        scale: Scale parameter
+
+    Returns:
+        Sampler function that takes (n_samples, device, dtype, generator) and returns distances
+    """
+
+    def sampler(
+        n_samples: int,
+        device: torch.device,
+        dtype: torch.dtype,
+        generator: Optional[torch.Generator] = None,
+    ) -> torch.Tensor:
+        # Use torch.distributions.StudentT
+        # Note: generator is not passed to distribution.sample() as it's not supported
+        m = torch.distributions.StudentT(
+            df=torch.tensor(df, device=device, dtype=dtype),
+            scale=torch.tensor(scale, device=device, dtype=dtype),
+        )
+        # sample() returns shape (n_samples,)
+        samples = m.sample((n_samples,))
+        return torch.abs(samples)
 
     return sampler
 
